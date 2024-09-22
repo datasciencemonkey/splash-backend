@@ -1,0 +1,94 @@
+{
+    "sessions": [
+      {
+        "time": "9:00 AM EDT",
+        "sessionType": "Keynote",
+        "title": "Keynote",
+        "description": "Explores the unification of lakehouse architecture with generative AI, highlighting innovations in AI, data warehousing, and analytics on the Databricks Data Intelligence Platform."
+      },
+      {
+        "time": "10:00 AM EDT",
+        "sessionType": "Training",
+        "title": "Get Started with Generative AI",
+        "description": "Teaches how to build GenAI applications using Databricks, covering prompt engineering, MLflow, Mosaic AI, and governance concepts."
+      },
+      {
+        "time": "11:00 AM EDT",
+        "sessionType": "Breakout",
+        "title": "AI/BI Genie - Intro & Best Practices",
+        "description": "Explores best practices for empowering teams with self-service data analytics and visualization."
+      },
+      {
+        "time": "11:00 AM EDT",
+        "sessionType": "Breakout",
+        "title": "Getting Started with Databricks SQL: Live Demos and New Feature",
+        "description": "Demonstrates Databricks SQL features, including AI assistants for coding and dashboards, and serverless infrastructure optimizations."
+      },
+      {
+        "time": "11:00 AM EDT",
+        "sessionType": "Breakout",
+        "title": "How Kestra Holdings Invests in Data Trust with Data Observability",
+        "description": "Showcases Kestra Holdings' approach to data quality using Databricks Unity Catalog and Monte Carlo for data observability."
+      },
+      {
+        "time": "12:00 PM EDT",
+        "sessionType": "Meals",
+        "title": "Lunch",
+        "description": ""
+      },
+      {
+        "time": "1:00 PM EDT",
+        "sessionType": "Breakout",
+        "title": "Discover Unity Catalog: Your Guide to Governance for Data and AI",
+        "description": "Presents Unity Catalog's latest features for data and AI governance, including row/column filtering, governed tags, and attribute-based access controls."
+      },
+      {
+        "time": "1:30 PM EDT",
+        "sessionType": "Breakout",
+        "title": "Exploring LLMOps on Databricks for Building Composable Compound AI Systems",
+        "description": "Examines Large Language Model Operations architectures, including building RAG bots and agents on Databricks."
+      },
+      {
+        "time": "1:30 PM EDT",
+        "sessionType": "Training",
+        "title": "Get Started with Data Engineering with Databricks",
+        "description": "Introduces basic data engineering skills using Databricks, covering data ingestion, transformation, and workflow orchestration."
+      },
+      {
+        "time": "1:30 PM EDT",
+        "sessionType": "Breakout",
+        "title": "The Unreasonable Effectiveness of an Asset Graph",
+        "description": "Demonstrates how a global data lineage graph can answer critical questions in data platforms, focusing on Dagster and Databricks integration."
+      },
+      {
+        "time": "3:00 PM EDT",
+        "sessionType": "Lightning Talk",
+        "title": "Building a Trusted Data Foundation for AI on Databricks",
+        "description": "Showcases Qlik's integration with Databricks MosaicAI for automating real-time data pipelines and transforming source data."
+      },
+      {
+        "time": "3:00 PM EDT",
+        "sessionType": "Breakout",
+        "title": "Comprehensive Guide to Mosaic AI: Getting GenAI Apps to Production on Databricks",
+        "description": "Explores Mosaic AI tools for rapid Generative AI application development, maintenance, and practical integration techniques."
+      },
+      {
+        "time": "3:30 PM EDT",
+        "sessionType": "Breakout",
+        "title": "Simplify Data, Analytics, and AI Orchestration with Databricks Workflows",
+        "description": "Demonstrates latest capabilities of Databricks Workflows for orchestrating data, analytics, and AI tasks, including new control features and job scheduling improvements."
+      },
+      {
+        "time": "4:00 PM EDT",
+        "sessionType": "Lightning Talk",
+        "title": "Boosting Rapid Innovation in Biotech with Novel Data Technology",
+        "description": "Illustrates how Kythera Labs and Databricks drive efficiencies in life sciences and healthcare data management through innovative data technologies."
+      },
+      {
+        "time": "4:00 PM EDT",
+        "sessionType": "Lightning Talk",
+        "title": "Data frenzy to data freedom: How centralized data fuels analytics & AI",
+        "description": "Discusses how Fivetran and Databricks enable data centralization for analytics and AI, addressing challenges and showcasing real-world examples."
+      }
+    ]
+  }
