@@ -12,3 +12,4 @@ dspy-ai==2.4.10
 duckduckgo-search==6.2.12
 fastapi==0.115.0
 uvicorn==0.30.6
+replicate==0.33.0
