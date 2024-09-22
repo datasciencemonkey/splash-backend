@@ -1,0 +1,14 @@
+openai==1.46.0
+langchain-core==0.2.1
+langchain-openai==0.2.0
+databricks-sdk==0.32.2
+databricks==0.2
+databricks-agents==0.5.1
+rich==13.8.1
+langgraph==0.2.22
+langchain-community==0.3.0
+langchain==0.3.0
+dspy-ai==2.4.10
+duckduckgo-search==6.2.12
+fastapi==0.115.0
+uvicorn==0.30.6
