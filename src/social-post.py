@@ -236,6 +236,7 @@ def get_links_from_topics(request: UserTopicsRequest):
     return result
 
 
+
 def get_recommendations(topics):
     request = UserTopicsRequest(topics=topics)
     response = get_links_from_topics(request)
@@ -244,7 +245,10 @@ def get_recommendations(topics):
     return response
 
 
-def update(text, user_type, social_media, generate_image, generate_recommendations):
+def info_fn():
+    gr.Info("Whipping up some AI 🤖 magic!!")
+
+def update(text, user_type, social_media, generate_image, generate_recommendations, progress=gr.Progress()):
     # Generate social media post
     social_post = generate_social_media_post(text, user_type, agenda, social_media)
     post = social_post[0]
@@ -313,7 +317,7 @@ with gr.Blocks(theme= gr.themes.Soft(
     out_rec = gr.Markdown(label="Recommendations", visible=False)
 
     btn = gr.Button("Run")
-    btn.click(
+    btn.click(info_fn,None,None).then(
         fn=update,
         inputs=[inp, user_type, social_media, generate_image, generate_recommendations],
         outputs=[out, out_img, out_rec],
