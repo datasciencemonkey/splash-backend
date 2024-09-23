@@ -1,3 +1,4 @@
+import gradio as gr
 from dotenv import load_dotenv
 import os
 import dspy
@@ -6,15 +7,13 @@ from datetime import datetime
 import pytz
 import replicate
 from pydantic import BaseModel
-from fastapi import FastAPI
 import random
-import uvicorn
-from fastapi.responses import JSONResponse
 from openai import OpenAI
+# from fastapi.responses import JSONResponse
+
 # from databricks.sdk import WorkspaceClient
 # import time
 from langchain_community.tools import DuckDuckGoSearchResults
-from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 API_BASE = os.getenv("API_BASE")
@@ -183,48 +182,20 @@ def construct_messages_from_search(topics):
     return messages
 
 
-app = FastAPI()
-
-
-origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:8080",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-
-
-
-@app.post("/generate-social-media-post")
-async def generate_social_media_post(
-    request: SocialMediaPostRequest,
-) -> SocialMediaPostResponse:
+def generate_social_media_post(user_post, user_role, agenda, social_media_site):
     current_time = get_current_time()
     with dspy.settings.context(lm=get_model()):
         response = post_generator(
             local_time=current_time,
-            user_post=request.user_post,
-            user_role=request.user_role,
+            user_post=user_post,
+            user_role=user_role,
             agenda=agenda,
-            social_media_site=request.social_media_site,
+            social_media_site=social_media_site,
         )
-    return SocialMediaPostResponse(
-        post=response.post.split("\n")[0], rationale=response.rationale
-    )
+    return (response.post.split("\n")[0], response.rationale)
 
 
-@app.post("/generate-image-prompt-n-get-topics")
-async def generate_image_prompt_n_get_topics(
+def generate_image_prompt_n_get_topics(
     request: ImgGenRequest,
 ) -> ImgPromptResponse:
     processor = SocialMediaProcessor()
@@ -237,17 +208,16 @@ async def generate_image_prompt_n_get_topics(
     )
 
 
-@app.post("/generate-image")
-async def generate_image(request: ImgPromptRequest):
+def generate_image_from_prompt(prompt):
+    # Function to generate an image from a prompt using the replicate API
     output = replicate.run(
         IMAGE_MODEL_NAME,
-        input={"prompt": request.img_prompt},
+        input={"prompt": prompt},
     )
-    return JSONResponse(content={"image_url": output})
+    return output  # Assuming output contains the image URL
 
 
-@app.post("/get-links-from-topics")
-async def get_links_from_topics(request: UserTopicsRequest):
+def get_links_from_topics(request: UserTopicsRequest):
     client = OpenAI(
         api_key=API_KEY,
         base_url=API_BASE,
@@ -259,11 +229,102 @@ async def get_links_from_topics(request: UserTopicsRequest):
         temperature=0.1,
     )
     json_response = response.choices[0].message.content
+    print(json_response)
     result = json.loads(
         json_response[json_response.find("[") : json_response.find("]") + 1].strip("\n")
     )
-    return JSONResponse(content=result)
+    return result
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+def get_recommendations(topics):
+    request = UserTopicsRequest(topics=topics)
+    response = get_links_from_topics(request)
+    # links = response  # Directly use the response as it is already a list
+    # formatted_links = "\n".join([f"{i+1}. {link}" for i, link in enumerate(links)])
+    return response
+
+
+def update(text, user_type, social_media, generate_image, generate_recommendations):
+    # Generate social media post
+    social_post = generate_social_media_post(text, user_type, agenda, social_media)
+    post = social_post[0]
+    post_rationale = social_post[1]
+
+    # Generate image if requested
+    image = None
+    topics = None
+    recommendations = None
+
+    if generate_image or generate_recommendations:
+        img_request = ImgGenRequest(user_post=text)
+        img_response = generate_image_prompt_n_get_topics(img_request)
+        topics = img_response.extracted_topics
+        image_prompt = img_response.flux_prompt
+        if generate_image:
+            image = generate_image_from_prompt(image_prompt)[0]
+            # Generate the image using the prompt
+            
+
+        # Generate recommendations if requested
+        if generate_recommendations and topics:
+            recommendations = get_recommendations(topics)
+            recommendations = "\n".join(
+                [f"{i+1}. [{link}]({link})" for i, link in enumerate(recommendations)]
+            )
+
+    return post, image, recommendations
+
+
+with gr.Blocks(theme= gr.themes.Soft(
+    primary_hue="orange", font="DM Sans"
+),css="footer {visibility: hidden}", title='Post Maker') as demo:
+    gr.Markdown("Generate a social media post & go viral! 🚀🚀")
+    with gr.Row():
+        inp = gr.Textbox(
+            label="Social Post Generator",
+            placeholder="What do you want to generate a post about?",
+            lines=4,
+        )
+
+        with gr.Column():
+            user_type = gr.Radio(
+                ["Speaker", "Attendee", "Organizer"],
+                label="I am a...",
+                info="In what capacity are you attending the conference?",
+            )
+            social_media = gr.Dropdown(
+                ["LinkedIn", "Facebook", "Instagram"],
+                label="Social Media App",
+                info="Which app do you want to post to?",
+            )
+
+    with gr.Row():
+        generate_image = gr.Checkbox(
+            label="Generate Image", info="Do you want to also generate an Image?"
+        )
+        generate_recommendations = gr.Checkbox(
+            label="Generate More Recommendations",
+            info="Fetch More Content to Read About?",
+        )
+    with gr.Column():
+        with gr.Row():
+            out = gr.Textbox(label="Generated Post", visible=False, lines=5)
+            out_img = gr.Image(label="Generated Image", visible=False,height="400px")
+    out_rec = gr.Markdown(label="Recommendations", visible=False)
+
+    btn = gr.Button("Run")
+    btn.click(
+        fn=update,
+        inputs=[inp, user_type, social_media, generate_image, generate_recommendations],
+        outputs=[out, out_img, out_rec],
+    ).then(
+        lambda: (
+            gr.update(visible=True),
+            gr.update(visible=True),
+            gr.update(visible=True),
+        ),
+        outputs=[out, out_img, out_rec],
+    )
+
+# Launch the demo with the Gradio footer and logo hidden
+demo.launch(show_api=False, share=False, show_error=True, favicon_path=None)
